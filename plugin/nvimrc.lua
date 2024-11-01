@@ -1,1 +1,1 @@
-require("nvimrc").setup()
+vim.schedule(require("nvimrc").setup)

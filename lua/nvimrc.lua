@@ -1,38 +1,35 @@
 local utils = require("utils")
 
-local Print = vim.print
-
 local M = {
 	opts = {
 		file_name = { ".nvimrc", ".nvim.lua", ".nvim-local" },
 	},
 }
 
-local function getFullOpts(opts)
-	for key, opt in pairs(opts) do
-		if type(opt) ~= "table" then
-			M.opts[key] = opt
-		elseif type(opt) == "table" then
-			M.opts[key] = vim.list_extend(M.opts[key], opt)
-		end
+---@param user_opts table
+local function setOpts(user_opts)
+	user_opts = user_opts or {}
+	if type(user_opts.file_name) == "string" then
+		utils.insertElem(M.opts.file_name, user_opts.file_name)
+	elseif type(user_opts.file_name) == "table" then
+		utils.insertTable(M.opts.file_name, user_opts.file_name)
 	end
 end
 
 local function sourceFiles()
 	local path = vim.fn.getcwd() .. "/"
-	Print(M.opts.file_name)
-	for _, file in pairs(M.opts.file_name) do
-		local full_file = path .. file
+	for _, name in pairs(M.opts.file_name) do
+		local file = path .. name
 
-		if utils.fileExist(full_file) then
-			vim.cmd("luafile " .. full_file)
+		if utils.fileExist(file) then
+			vim.cmd("luafile " .. file)
 		end
 	end
 end
 
-function M.setup(args)
-	getFullOpts(args.opts)
-	vim.schedule(sourceFiles)
+function M.setup(opts)
+	setOpts(opts)
+	sourceFiles()
 end
 
 return M

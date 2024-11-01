@@ -1,1 +1,3 @@
-# Local config
+# Nvimrc
+
+Automatically set options in a file.
